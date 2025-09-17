@@ -43,8 +43,8 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: ItemCell.identifier, for: indexPath) as? ItemCell else {
             fatalError("The TableView could not dequeue a ItemCell in ViewController")
         }
-        //let item = items[indexPath.row]
-        //cell.configure(with: item)
+        let item = items[indexPath.row]
+        cell.configure(with: item)
         
         return cell
     }
