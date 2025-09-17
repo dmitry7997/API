@@ -8,6 +8,12 @@
 
 import Foundation
 
+struct Item: Decodable {
+    let title: String?
+    let imageUrl: URL?
+    let description: String
+}
+
 class ContentService {
     let session = FakeNetworkSession()
     // добавить мапинг, преобразовать данные в модели (массив объектов)
