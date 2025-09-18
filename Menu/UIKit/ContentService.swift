@@ -12,12 +12,6 @@ struct Item: Decodable {
     let title: String?
     let image_url: URL?
     let description: String
-
-    enum CodingKeys: String, CodingKey {
-        case title = "title"
-        case image_url = "image_url"
-        case description = "description"
-    }
 }
 
 struct ContentItemsResponse: Decodable {
