@@ -18,6 +18,7 @@ class ItemCell: UITableViewCell {
         iv.image = UIImage(systemName: "questionmark") //nil
         iv.tintColor = .label
         iv.layer.cornerRadius = 12
+        iv.clipsToBounds = true
         return iv
     }()
     
@@ -72,7 +73,7 @@ class ItemCell: UITableViewCell {
         titleLabel.text = item.title
         titleLabel.isHidden = item.title == nil
         
-        if let imageUrl = item.imageUrl {
+        if let imageUrl = item.image_url {
             DispatchQueue.global().async {
                 if let data = try? Data(contentsOf: imageUrl), let image = UIImage(data: data) {
                     DispatchQueue.main.async {
