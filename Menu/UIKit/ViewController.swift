@@ -18,7 +18,20 @@ class ViewController: UIViewController {
         tableView.delegate = self
         self.setupUI()
         
-        service.getItemData()
+        service.getItemData() { [weak self] result in
+            guard let self = self else { return }
+            
+            switch result {
+            case .success(let items):
+                self.items = items
+                
+                DispatchQueue.main.async {
+                    self.tableView.reloadData()
+                }
+            case .failure(let error):
+                print("Error fetching data: \(error)")
+            }
+        }
     }
     
     private func setupUI() {
@@ -36,7 +49,7 @@ class ViewController: UIViewController {
     
 extension ViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 8
+        return items.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
