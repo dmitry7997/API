@@ -1,8 +1,18 @@
 import UIKit
 
-class ViewController: UIViewController {
+final class ViewController: UIViewController {
+        
+    private let service: ContentService // проверить инициализатор
     
-    private let service = ContentService()
+    init(service: ContentServiceProtocol = ContentService(session: FakeNetworkSession())) {
+        self.service = service as! ContentService
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        self.service = ContentService(session: FakeNetworkSession())
+        super.init(coder: coder)
+    }
     
     private var items: [Item] = []
     
@@ -16,10 +26,10 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         tableView.dataSource = self
         tableView.delegate = self
-        self.setupUI()
+        setupUI()
         
         service.getItemData() { [weak self] result in
-            guard let self = self else { return }
+            guard let self else { return }
             
             switch result {
             case .success(let items):
@@ -35,14 +45,14 @@ class ViewController: UIViewController {
     }
     
     private func setupUI() {
-        self.view.addSubview(tableView)
+        view.addSubview(tableView)
         tableView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            tableView.topAnchor.constraint(equalTo: self.view.topAnchor),
-            tableView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor),
-            tableView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor),
-            tableView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor),
+            tableView.topAnchor.constraint(equalTo: view.topAnchor),
+            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
         ])
     }
 }
