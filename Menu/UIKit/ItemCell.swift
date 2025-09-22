@@ -8,14 +8,13 @@
 
 import UIKit
 
-class ItemCell: UITableViewCell {
+final class ItemCell: UITableViewCell {
     
     static let identifier = "ItemCell"
     
     private let myImageView: UIImageView = {
         let iv = UIImageView()
         iv.contentMode = .scaleAspectFit
-        iv.image = UIImage(systemName: "questionmark") //nil
         iv.tintColor = .label
         iv.layer.cornerRadius = 12
         iv.clipsToBounds = true
@@ -27,7 +26,6 @@ class ItemCell: UITableViewCell {
         label.textColor = .label
         label.textAlignment = .left
         label.font = .systemFont(ofSize: 18, weight: .bold)
-        label.text = "title" //nil
         return label
     }()
     
@@ -36,7 +34,6 @@ class ItemCell: UITableViewCell {
         label.textColor = .label
         label.textAlignment = .left
         label.font = .systemFont(ofSize: 16, weight: .regular)
-        label.text = "description description description description description description description" //nil
         label.numberOfLines = 3
         label.lineBreakMode = .byTruncatingTail
         return label
@@ -62,7 +59,7 @@ class ItemCell: UITableViewCell {
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        self.setupUI()
+        setupUI()
     }
     
     required init?(coder: NSCoder) {
@@ -73,15 +70,35 @@ class ItemCell: UITableViewCell {
         titleLabel.text = item.title
         titleLabel.isHidden = item.title == nil
         
-        if let imageUrl = item.image_url {
-            DispatchQueue.global().async {
-                if let data = try? Data(contentsOf: imageUrl), let image = UIImage(data: data) {
+        descriptionLabel.text = item.description
+        
+        if let imageUrl = item.imageUrl {
+            myImageView.isHidden = false
+            
+            let task = URLSession.shared.dataTask(with: imageUrl) { [weak self] data, response, error in
+                
+                guard let self else { return }
+                
+                if let error = error {
+                    print("\(error.localizedDescription)")
+                    return
+                }
+                
+                guard let data else {
+                    print("\(String(describing: error?.localizedDescription))")
+                    return
+                }
+                
+                if let image = UIImage(data: data) {
                     DispatchQueue.main.async {
                         self.myImageView.image = image
                     }
+                } else {
+                    print("\(String(describing: error?.localizedDescription))")
                 }
             }
-            myImageView.isHidden = false
+            task.resume()
+            
         } else {
             myImageView.isHidden = true
         }
@@ -90,15 +107,15 @@ class ItemCell: UITableViewCell {
     }
 
     private func setupUI() {
-        self.textStackView.addArrangedSubview(titleLabel)
-        self.textStackView.addArrangedSubview(descriptionLabel)
+        textStackView.addArrangedSubview(titleLabel)
+        textStackView.addArrangedSubview(descriptionLabel)
         
-        self.mainStackView.addArrangedSubview(textStackView)
-        self.mainStackView.addArrangedSubview(myImageView)
+        mainStackView.addArrangedSubview(textStackView)
+        mainStackView.addArrangedSubview(myImageView)
         
-        self.contentView.addSubview(mainStackView)
+        contentView.addSubview(mainStackView)
         
-        self.contentView.layoutMargins = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
+        contentView.layoutMargins = UIEdgeInsets(top: 16, left: 16, bottom: 16, right: 16)
         
         myImageView.translatesAutoresizingMaskIntoConstraints = false
         titleLabel.translatesAutoresizingMaskIntoConstraints = false
@@ -107,10 +124,10 @@ class ItemCell: UITableViewCell {
         mainStackView.translatesAutoresizingMaskIntoConstraints = false
         
         NSLayoutConstraint.activate([
-            mainStackView.topAnchor.constraint(equalTo: self.contentView.layoutMarginsGuide.topAnchor),
-            mainStackView.bottomAnchor.constraint(equalTo: self.contentView.layoutMarginsGuide.bottomAnchor),
-            mainStackView.trailingAnchor.constraint(equalTo: self.contentView.layoutMarginsGuide.trailingAnchor),
-            mainStackView.leadingAnchor.constraint(equalTo: self.contentView.layoutMarginsGuide.leadingAnchor),
+            mainStackView.topAnchor.constraint(equalTo: contentView.layoutMarginsGuide.topAnchor),
+            mainStackView.bottomAnchor.constraint(equalTo: contentView.layoutMarginsGuide.bottomAnchor),
+            mainStackView.trailingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.trailingAnchor),
+            mainStackView.leadingAnchor.constraint(equalTo: contentView.layoutMarginsGuide.leadingAnchor),
             
             myImageView.heightAnchor.constraint(equalToConstant: 80),
             myImageView.widthAnchor.constraint(equalToConstant: 80),
