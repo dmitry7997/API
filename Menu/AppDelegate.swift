@@ -6,30 +6,36 @@
 //  Copyright © 2019 DoorDash, Inc. All rights reserved.
 //
 
-#if UIKIT
+//#if UIKIT
 
-import UIKit
+//import UIKit
+//
+//@UIApplicationMain
+//class AppDelegate: UIResponder, UIApplicationDelegate {
+//    var window: UIWindow?
+//    
+//    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+//        return true
+//    }
+//}
 
-@UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
-    var window: UIWindow?
-    
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        return true
-    }
-}
-
-#else
+//#else
 
 import SwiftUI
 
 @main
 struct Menu: App {
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var addDelegate
     var body: some Scene {
         WindowGroup {
-            MainView()
+            MainView(service: ContentServiceCombine())
         }
     }
 }
 
-#endif
+class AppDelegate: NSObject, UIApplicationDelegate {
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
+        return true
+    }
+}
+//#endif
