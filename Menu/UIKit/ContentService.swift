@@ -10,36 +10,40 @@ import Foundation
 
 struct Item: Decodable {
     let title: String?
-    let image_url: URL?
+    let imageUrl: URL?
     let description: String
 }
 
 struct ContentItemsResponse: Decodable {
-    let content_items: [Item]
+    let contentItems: [Item]
 }
 
 protocol ContentServiceProtocol {
     func getItemData(completion: @escaping (Result<[Item], Error>) -> Void)
 }
 
-class ContentService: ContentServiceProtocol {
-    private let session = FakeNetworkSession()
+final class ContentService: ContentServiceProtocol {
+    
+    private let session: FakeNetworkSession
+    
+    init(session: FakeNetworkSession) {
+        self.session = session
+    }
     
     func getItemData(completion: @escaping (Result<[Item], Error>) -> Void) {
         session.networkTask { data in
             
-            DispatchQueue.global(qos: .userInitiated).async {
-                do {
-                    let decoder = JSONDecoder()
-                    let response = try decoder.decode(ContentItemsResponse.self, from: data)
-                    let items = response.content_items
-                    
-                    DispatchQueue.main.async {
-                        completion(.success(items))
-                    }
-                } catch {
-                    print("\(error.localizedDescription)")
+            do {
+                let decoder = JSONDecoder()
+                decoder.keyDecodingStrategy = .convertFromSnakeCase
+                let response = try decoder.decode(ContentItemsResponse.self, from: data)
+                let items = response.contentItems
+                
+                DispatchQueue.main.async {
+                    completion(.success(items))
                 }
+            } catch {
+                print("\(error.localizedDescription)")
             }
         }
     }
